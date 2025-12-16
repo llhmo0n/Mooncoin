@@ -1,318 +1,285 @@
-# 🌙 Mooncoin v2.1
+# 🌙 MOONCOIN v3.0 — PROTOCOLO CONGELADO
 
-**La Plata Digital - Complemento operativo para Bitcoin**
-
-[![Rust](https://img.shields.io/badge/Rust-1.70+-orange.svg)](https://www.rust-lang.org/)
-[![Bitcoin](https://img.shields.io/badge/Bitcoin-Testnet%20%7C%20Mainnet-yellow.svg)](https://bitcoin.org/)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+## "El dinero que no se puede perder"
 
 ---
 
-## 📖 Filosofía
+## ⚠️ AVISO IMPORTANTE
 
-> **Bitcoin = Oro Digital** (reserva de valor, no se gasta diariamente)  
-> **Mooncoin = Plata Digital** (transacciones diarias, uso práctico)
+**Este protocolo está CONGELADO.**
 
-Mooncoin **NO compite** con Bitcoin. Mooncoin **complementa** a Bitcoin proporcionando una capa operativa mientras tu BTC permanece seguro y bloqueado en la blockchain de Bitcoin.
+No se agregarán features. No se optimizará sin emergencia criptográfica.
+La especificación es la autoridad final.
 
 ---
 
-## 🔐 Modelo LOCK-OPERATE-SETTLE
+## 📜 Documentos Fundacionales
 
-El corazón de Mooncoin es el puente con Bitcoin:
+| Documento | Propósito |
+|-----------|-----------|
+| `MOONCOIN_PROTOCOL_SPECIFICATION_v1.0.txt` | Define qué ES Mooncoin |
+| `README.md` | Este archivo |
+| `src/` | Implementación de referencia |
+
+**La especificación tiene precedencia sobre el código.**
+
+---
+
+## 🎯 Qué es Mooncoin
+
+Mooncoin es un sistema de dinero electrónico peer-to-peer que **complementa** a Bitcoin resolviendo tres problemas humanos:
+
+| Problema | Solución Mooncoin |
+|----------|-------------------|
+| **Robo/Error** | Vaults con cancel path |
+| **Pérdida de acceso** | Recovery social (3-of-5) |
+| **Muerte del dueño** | Herencia digital automática |
+
+Mooncoin **NO** es:
+- Competidor de Bitcoin
+- Plataforma de smart contracts
+- Sistema con gobernanza
+- Proyecto con fundación o tesorería
+
+---
+
+## 📊 Estado Final
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    MOONCOIN v3.0                            │
+│                  PROTOCOLO CONGELADO                        │
+├─────────────────────────────────────────────────────────────┤
+│  Código:          ~27,000 líneas                            │
+│  Módulos:         50+                                       │
+│  Tests:           297 passing                               │
+│  Estado:          COMPLETO - NO AGREGAR                     │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🔐 Parámetros Monetarios (INMUTABLES)
+
+```
+Supply máximo:          21,000,000 MOON
+Decimales:              8
+Recompensa inicial:     50 MOON
+Halving cada:           210,000 bloques (~4 años)
+Tiempo de bloque:       5 minutos
+Ajuste dificultad:      Cada 2,016 bloques
+Consenso:               Proof of Work (SHA-256d)
+Modelo:                 UTXO
+```
+
+**Estos parámetros NUNCA cambian.**
+
+---
+
+## 🛡️ Protección Humana
+
+### Vaults (vs robo)
+```
+Hot key → Inicia retiro → 24h espera → Completa
+                ↓
+        Detectas robo → Cold key → CANCELA → Recovery address
+```
+
+### Recovery Social (vs pérdida)
+```
+Pierdes seed → 3-of-5 guardianes firman → 30 días espera → Recuperas
+                                              ↓
+                          Apareces → CANCELAS con tu clave
+```
+
+### Herencia Digital (vs muerte)
+```
+Check-in cada 6 meses → Timer se resetea → Tú controlas
+           ↓
+No check-in por 1 año → Herederos reclaman automáticamente
+```
+
+---
+
+## 🌐 Relación con Bitcoin
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    CICLO MOONCOIN-BITCOIN                       │
-├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
-│   1. LOCK     Usuario bloquea BTC en script con timelock        │
-│               ↓                                                 │
-│   2. OPERATE  Usuario opera con MOON (BTC intocado)             │
-│               ↓                                                 │
-│   3. SETTLE   Timelock expira → Usuario recupera su BTC         │
+│   BITCOIN (2009)                                                │
+│   "Dinero que no se puede censurar"                            │
+│   Oro digital. Store of value. Máxima seguridad.               │
+│                                                                 │
+│                         +                                       │
+│                                                                 │
+│   MOONCOIN (2024)                                               │
+│   "Dinero que no se puede perder"                              │
+│   Plata digital. Protección humana. Privacidad nativa.         │
+│                                                                 │
+│                         =                                       │
+│                                                                 │
+│   SISTEMA MONETARIO COMPLETO PARA HUMANOS                       │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-**Principios fundamentales:**
-- Mooncoin **NUNCA** custodia BTC
-- Mooncoin **SOLO** observa la blockchain de Bitcoin
-- El usuario **SIEMPRE** controla sus claves privadas
-- El BTC **SIEMPRE** puede ser recuperado después del timelock
+Compatible vía Atomic Swaps. **Complementario, no competidor.**
 
 ---
 
-## 🚀 Instalación
+## 🔗 BTC LOCK - El Puente con Bitcoin
 
-### Requisitos
-- Rust 1.70 o superior
-- Conexión a internet (para observar Bitcoin)
+El módulo BTC Lock implementa el puente **no-custodial** entre Mooncoin y Bitcoin.
 
-### Compilar desde fuente
+### El Modelo LOCK-OPERATE-SETTLE
 
-```bash
-git clone https://github.com/tu-usuario/mooncoin.git
-cd mooncoin
-cargo build --release
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                                                                 │
+│  1. LOCK    →  Usuario bloquea BTC en script con timelock       │
+│                (El BTC permanece en Bitcoin, no en Mooncoin)    │
+│                                                                 │
+│  2. OPERATE →  Usuario opera con MOON libremente                │
+│                (El BTC sigue intacto en Bitcoin)                │
+│                                                                 │
+│  3. SETTLE  →  Timelock expira, usuario recupera su BTC         │
+│                (Con su clave de recovery, sin intermediarios)   │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-### Verificar instalación
+### Principios del Puente
+
+- **Mooncoin NUNCA custodia BTC** — Solo observa la blockchain
+- **El usuario SIEMPRE controla sus claves** — Sin intermediarios
+- **El BTC SIEMPRE puede ser recuperado** — Después del timelock
+- **Sin confianza requerida** — Verificación criptográfica pura
+
+### Comandos BTC Lock
 
 ```bash
-./target/release/mooncoin btc-lock-health
-```
-
----
-
-## 📋 Comandos BTC Lock
-
-### Verificación del Sistema
-```bash
+# Verificación del sistema
 mooncoin btc-lock-health          # Verificar todos los componentes
-mooncoin btc-lock-connect         # Probar conexión a Bitcoin mainnet
-mooncoin btc-lock-connect --testnet  # Probar conexión a testnet
-```
+mooncoin btc-lock-connect         # Probar conexión a Bitcoin
 
-### Generación de LOCKs
-```bash
+# Generación de LOCKs
 mooncoin btc-lock-templates       # Ver templates disponibles
 mooncoin btc-lock-keygen          # Generar claves de prueba (testnet)
 mooncoin btc-lock-generate        # Generar script LOCK
-mooncoin btc-lock-verify <script> # Verificar script
-```
+mooncoin btc-lock-verify          # Verificar script
 
-### Gestión de LOCKs
-```bash
-mooncoin btc-lock-register        # Registrar LOCK para observación
+# Gestión de LOCKs
+mooncoin btc-lock-register        # Registrar LOCK
 mooncoin btc-lock-status          # Ver estado de un LOCK
 mooncoin btc-lock-list            # Listar todos los LOCKs
-mooncoin btc-lock-refresh         # Actualizar estados desde Bitcoin
-```
+mooncoin btc-lock-refresh         # Actualizar estados
 
-### Settlement
-```bash
+# Settlement
 mooncoin btc-lock-settle-check    # Verificar si listo para settlement
 mooncoin btc-lock-settle          # Construir TX de settlement
+
+# Consultas Bitcoin
+mooncoin btc-lock-query-tx        # Consultar transacción
+mooncoin btc-lock-check-utxo      # Verificar UTXO
 ```
 
-### Consultas Bitcoin
-```bash
-mooncoin btc-lock-query-tx <txid> # Consultar transacción
-mooncoin btc-lock-check-utxo      # Verificar UTXO en blockchain
-```
-
----
-
-## 🔄 Flujo Completo (Ejemplo Testnet)
-
-### 1. Verificar sistema
-```bash
-./target/release/mooncoin btc-lock-health
-```
-
-### 2. Generar claves de prueba
-```bash
-./target/release/mooncoin btc-lock-keygen
-```
-**⚠️ Guarda las claves privadas, especialmente RECOVERY**
-
-### 3. Generar script LOCK
-```bash
-./target/release/mooncoin btc-lock-generate --testnet \
-  --pubkey-hot <HOT_PUBKEY> \
-  --pubkey-cold <COLD_PUBKEY> \
-  --pubkey-recovery <RECOVERY_PUBKEY> \
-  --timelock <BLOQUE_ACTUAL+100>
-```
-
-### 4. Enviar tBTC
-Envía testnet BTC a la dirección P2WSH generada usando cualquier wallet.
-
-Faucets recomendados:
-- https://coinfaucet.eu/en/btc-testnet/
-- https://testnet-faucet.mempool.co/
-
-### 5. Registrar LOCK
-```bash
-./target/release/mooncoin btc-lock-register --testnet \
-  --txid <TXID> \
-  --vout 0 \
-  --script <REDEEM_SCRIPT_HEX>
-```
-
-### 6. Monitorear estado
-```bash
-./target/release/mooncoin btc-lock-status --testnet --txid <TXID>
-```
-
-### 7. Settlement (cuando expire el timelock)
-```bash
-./target/release/mooncoin btc-lock-settle --testnet \
-  --txid <TXID> \
-  --vout 0 \
-  --destination <TU_DIRECCION_DESTINO> \
-  --privkey <RECOVERY_PRIVKEY_HEX> \
-  --fee-rate 2
-```
-
-### 8. Broadcast
-Usa la transacción hex generada:
-- Web: https://blockstream.info/testnet/tx/push
-- API: `curl -X POST -d '<TX_HEX>' https://blockstream.info/testnet/api/tx`
-
----
-
-## 🏗️ Arquitectura
-
-```
-src/
-├── main.rs           # CLI principal (~7,100 líneas)
-│   ├── Wallet commands
-│   ├── Mining commands
-│   ├── Network commands
-│   ├── Explorer commands
-│   └── BTC Lock commands (15 comandos)
-│
-├── btc_lock.rs       # Módulo BTC Lock (~1,700 líneas)
-│   ├── Script generation (multisig_cltv, htlc_simple)
-│   ├── Template matching
-│   ├── P2WSH address generation
-│   ├── Esplora API client (mainnet/testnet/signet)
-│   ├── Lock registry
-│   └── Settlement TX builder
-│
-└── lib.rs            # Constantes del protocolo
-```
-
----
-
-## 🔧 Templates LOCK Soportados
-
-### multisig_cltv (Recomendado)
-2-of-2 multisig con recuperación unilateral después del timelock.
-
-```
-IF
-  2 <pubkey_hot> <pubkey_cold> 2 CHECKMULTISIG
-ELSE
-  <timelock> CHECKLOCKTIMEVERIFY DROP
-  <pubkey_recovery> CHECKSIG
-ENDIF
-```
-
-**Uso:**
-- Gasto inmediato: requiere firma hot + cold
-- Después de timelock: solo firma recovery
-
-### htlc_simple
-Hash Time-Locked Contract con timeout de refund.
-
-```
-IF
-  SHA256 <hash> EQUALVERIFY <pubkey> CHECKSIG
-ELSE
-  <timeout> CHECKSEQUENCEVERIFY DROP <pubkey> CHECKSIG
-ENDIF
-```
-
----
-
-## 🌐 Conexión a Bitcoin
-
-Mooncoin se conecta a Bitcoin via API Esplora (Blockstream):
+### Conexión a Bitcoin
 
 | Red | API |
 |-----|-----|
-| Mainnet | https://blockstream.info/api |
-| Testnet | https://blockstream.info/testnet/api |
-| Signet | https://mempool.space/signet/api |
-
-No requiere nodo Bitcoin local.
+| Mainnet | blockstream.info/api |
+| Testnet | blockstream.info/testnet/api |
+| Signet | mempool.space/signet/api |
 
 ---
 
-## ⚠️ Advertencias de Seguridad
+## 🚫 Líneas Rojas (Violar = No es Mooncoin)
 
-1. **GUARDA TUS CLAVES PRIVADAS** - Sin ellas perderás tu BTC permanentemente
-2. **GUARDA EL REDEEM SCRIPT** - Necesario para el settlement
-3. **VERIFICA EL TIMELOCK** - Asegúrate que sea una fecha futura razonable
-4. **PRUEBA CON TESTNET** - Siempre prueba antes de usar mainnet
-5. **VERIFICA DIRECCIONES** - Un error de dirección es irreversible
-
----
-
-## 📊 Estados de un LOCK
-
-| Estado | Descripción | Acción |
-|--------|-------------|--------|
-| `LOCKED` | UTXO existe, timelock activo | Esperar |
-| `EXPIRED` | Timelock expirado | Puede hacer settlement |
-| `SETTLED` | UTXO gastado | Ciclo completado |
-| `UNKNOWN` | Error consultando | Verificar conexión |
+- ❌ Cambiar supply máximo
+- ❌ Proof of Stake
+- ❌ Modelo de cuentas (debe ser UTXO)
+- ❌ VM Turing-complete
+- ❌ Pre-mine o ICO
+- ❌ Gobernanza on-chain
+- ❌ Tesorería controlada
+- ❌ Eliminar privacidad por defecto
+- ❌ Eliminar protecciones humanas
+- ❌ Custodiar BTC en el puente
 
 ---
 
-## 🛠️ Dependencias Principales
+## 🔧 Uso
 
-| Crate | Uso |
-|-------|-----|
-| `ureq` | Cliente HTTP para Esplora API |
-| `secp256k1` | Criptografía de curva elíptica |
-| `sha2` | Hashing SHA256 |
-| `serde` | Serialización JSON |
-| `clap` | Framework CLI |
-| `tokio` | Runtime async |
+```bash
+# Compilar
+cargo build --release
 
----
+# Tests
+cargo test
 
-## 📜 Changelog
+# Ejecutar
+./target/release/mooncoin
 
-### v2.1 (2024-12-15)
-- ✅ Módulo BTC Lock completo
-- ✅ Conexión a Bitcoin real (Esplora API)
-- ✅ Settlement TX Builder
-- ✅ 15 comandos CLI para BTC Lock
-- ✅ Soporte mainnet/testnet/signet
-
-### v2.0
-- Blockchain Mooncoin funcional
-- Wallet HD (BIP39/BIP32)
-- Mining y consenso
-- Block explorer integrado
-
-### v1.0
-- Implementación inicial
+# Verificar BTC Lock
+./target/release/mooncoin btc-lock-health
+```
 
 ---
 
-## 🤝 Contribuir
+## 📁 Estructura del Proyecto
 
-1. Fork el repositorio
-2. Crea una rama (`git checkout -b feature/nueva-funcionalidad`)
-3. Commit tus cambios (`git commit -am 'Agregar nueva funcionalidad'`)
-4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
-5. Abre un Pull Request
+```
+mooncoin/
+├── src/
+│   ├── main.rs        # CLI completo (~7,100 líneas)
+│   ├── btc_lock.rs    # Módulo BTC Lock (~1,700 líneas)
+│   └── lib.rs         # Constantes del protocolo
+├── docs/
+│   ├── MOONCOIN_PROTOCOL_SPECIFICATION_v1.0.txt
+│   ├── BTC_LOCK.md
+│   ├── SECURITY.md
+│   └── QUICKSTART.md
+├── Cargo.toml
+├── README.md
+├── CHANGELOG.md
+└── LICENSE
+```
+
+---
+
+## 📝 Para Futuros Mantenedores
+
+1. **NO AGREGUEN FEATURES** — Mooncoin está completa
+2. **NO OPTIMICEN SIN NECESIDAD** — Si funciona, no lo toquen
+3. **NO CREEN GOBERNANZA** — El momento que hay votación, hay política
+4. **NO BUSQUEN ADOPCIÓN** — Existe para quien la necesite
+5. **MANTENGAN LA ESPECIFICACIÓN** — Es más importante que el código
+6. **SEPAN DECIR NO** — El 99% de las ideas son malas
+7. **EL PUENTE NUNCA CUSTODIA** — Mooncoin observa Bitcoin, nunca lo controla
+
+---
+
+## 🏛️ Ausencia del Creador
+
+Este proyecto fue diseñado para sobrevivir sin su creador.
+
+- No hay autoridad central
+- No hay fundación
+- No hay tesorería
+- No hay poder especial para nadie
+
+La especificación es la autoridad. El código la implementa.
+
+**Si alguien dice hablar "en nombre de Mooncoin", miente.**
 
 ---
 
 ## 📄 Licencia
 
-MIT License - ver [LICENSE](LICENSE)
+MIT — Usa, modifica, distribuye libremente.
 
 ---
 
-## 👤 Autor
+*"El mejor dinero es el que nunca pierdes, ni siquiera cuando mueres."*
 
-**KNKI**
-
-Mooncoin - La Plata Digital  
-*Bitcoin 2009 style in Rust 2025*
-
----
-
-## 🔗 Links
-
-- [Bitcoin](https://bitcoin.org/)
-- [Blockstream Explorer](https://blockstream.info/)
-- [Esplora API Docs](https://github.com/Blockstream/esplora/blob/master/API.md)
+**Mooncoin v3.0 — Protocolo Congelado** 🌙
