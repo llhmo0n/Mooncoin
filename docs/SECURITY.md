@@ -1,199 +1,111 @@
-# Guía de Seguridad
+# Moonvault Security Model
 
-## ⚠️ Advertencias Críticas
+## Core Principle
 
-### 1. Pérdida de Claves = Pérdida de BTC
+**Your BTC is always recoverable.**
 
-**Si pierdes tu clave privada de RECOVERY, perderás tu BTC permanentemente.**
+Moonvault is designed so that even if the entire Moonvault network disappears, you can still recover your Bitcoin directly on Bitcoin L1.
 
-Mooncoin NO puede:
-- Recuperar claves perdidas
-- Revertir transacciones
-- Acceder a tus fondos
+## Vault Architecture
 
-### 2. Mooncoin NO Custodia
+### Three-Key System
 
-Mooncoin es una herramienta de observación. Tu BTC siempre permanece en la blockchain de Bitcoin, controlado únicamente por las claves privadas.
+| Key | Purpose | Restrictions |
+|-----|---------|--------------|
+| **Hot Key** | Daily operations | Limited to daily amount |
+| **Cold Key** | Large transactions | Requires delay period |
+| **Recovery Key** | Emergency recovery | Requires timelock expiration |
 
----
-
-## 🔐 Mejores Prácticas
-
-### Generación de Claves
-
-1. **Usa `btc-lock-keygen` solo para pruebas (testnet)**
-2. **Para mainnet, genera claves con herramientas auditadas:**
-   - Hardware wallets (Ledger, Trezor)
-   - Bitcoin Core
-   - Electrum
-
-### Almacenamiento de Claves
-
-| Qué guardar | Cómo guardarlo |
-|-------------|----------------|
-| Recovery privkey | Hardware wallet, papel offline, steel backup |
-| Hot privkey | Solo si necesitas gasto cooperativo |
-| Cold privkey | Almacenamiento frío separado |
-| Redeem script | Puede estar en texto plano (no es secreto) |
-
-### Antes de Fondear
-
-1. **Verifica que controlas las claves privadas**
-   - Firma un mensaje de prueba con cada clave
-   
-2. **Verifica el timelock**
-   - Asegúrate que el bloque objetivo está en el futuro
-   - Calcula cuánto tiempo tendrás el BTC bloqueado
-   
-3. **Prueba con cantidades pequeñas**
-   - Primero testnet
-   - Luego mainnet con cantidad mínima
-   - Después cantidades mayores
-
-### Durante el LOCK
-
-1. **Monitorea el estado regularmente**
-   ```bash
-   mooncoin btc-lock-status --txid <TXID>
-   ```
-
-2. **No pierdas el redeem script**
-   - Aunque no es secreto, lo necesitas para settlement
-
-3. **Mantén acceso a tu recovery key**
-   - La necesitarás cuando expire el timelock
-
-### Settlement
-
-1. **Verifica el timelock ha expirado**
-   ```bash
-   mooncoin btc-lock-settle-check --txid <TXID>
-   ```
-
-2. **Verifica la dirección destino**
-   - Triple-check la dirección antes de generar la TX
-   
-3. **Revisa el fee**
-   - Asegúrate que el fee rate es razonable
-   
-4. **Verifica la TX antes de broadcast**
-   - Puedes decodificar el hex en blockstream.info
-
----
-
-## 🚨 Escenarios de Riesgo
-
-### Script Malformado
-
-**Problema:** El script generado no es gastable.
-
-**Causa:** Claves públicas inválidas o corrutas.
-
-**Prevención:**
-- Verifica el script con `btc-lock-verify`
-- Prueba con testnet primero
-- Usa claves de fuentes confiables
-
-### Pérdida de Recovery Key
-
-**Problema:** No puedes hacer settlement después del timelock.
-
-**Consecuencia:** BTC permanece bloqueado para siempre.
-
-**Prevención:**
-- Múltiples backups de la recovery key
-- Almacenamiento en ubicaciones físicas separadas
-- Considera usar un esquema multisig para la recovery key
-
-### Timelock Demasiado Largo
-
-**Problema:** BTC bloqueado por años.
-
-**Prevención:**
-- Calcula cuidadosamente el timelock
-- 1 mes ≈ 4,320 bloques
-- 1 año ≈ 52,560 bloques
-
-### Pérdida del Redeem Script
-
-**Problema:** No puedes construir la transacción de settlement.
-
-**Consecuencia:** Necesitas reconstruir el script (posible si tienes las pubkeys y timelock).
-
-**Prevención:**
-- Guarda el redeem script junto con el registro del LOCK
-- Es información pública, no requiere protección especial
-
----
-
-## 📋 Checklist Pre-LOCK
+### Security Layers
 
 ```
-[ ] Tengo la clave privada de recovery guardada de forma segura
-[ ] Tengo la clave privada de hot guardada
-[ ] Tengo la clave privada de cold guardada
-[ ] Verifiqué que las pubkeys son correctas
-[ ] El timelock es razonable para mis necesidades
-[ ] Probé el flujo completo en testnet
-[ ] Tengo múltiples backups de las claves
-[ ] Entiendo que Mooncoin NO puede recuperar mis fondos
+Layer 1: Hot Key (daily spending)
+├── Limited amount per day
+├── Immediate transactions
+└── If compromised: limited damage
+
+Layer 2: Cold Key (savings)
+├── No daily limit
+├── Requires delay (e.g., 144 blocks = ~24h)
+├── Can be cancelled during delay
+└── If compromised: delay gives time to react
+
+Layer 3: Recovery Key (emergency)
+├── Full access to funds
+├── Only works after timelock expires
+├── Ultimate backup if other keys lost
+└── If compromised: timelock protects until expiry
 ```
+
+## Panic Button
+
+If you detect unauthorized activity:
+
+1. **Activate panic**: `moonvault vault-panic <VAULT_ID> --recovery-key <KEY>`
+2. **All operations freeze immediately**
+3. **Wait for timelock**
+4. **Recover with recovery key**
+
+## What Moonvault Cannot Do
+
+- ❌ Access your BTC
+- ❌ Move your BTC
+- ❌ Block your recovery (after timelock)
+- ❌ Change your vault rules
+- ❌ Seize your funds
+
+## Recovery Guarantee
+
+```
+INVARIANT: BTC is always recoverable on Bitcoin L1
+
+Scenario: Moonvault completely disappears
+Solution:
+1. Wait for your timelock block height
+2. Construct recovery transaction manually
+3. Sign with your recovery key
+4. Broadcast to Bitcoin network
+5. Your BTC is recovered
+
+No dependency on Moonvault for final recovery.
+```
+
+## Best Practices
+
+### Key Storage
+
+| Key | Storage Recommendation |
+|-----|----------------------|
+| Hot Key | Hardware wallet or encrypted on device |
+| Cold Key | Hardware wallet (separate device) |
+| Recovery Key | Paper/metal backup in secure location |
+
+### Timelock Selection
+
+| Timelock | Use Case |
+|----------|----------|
+| ~52,560 blocks (1 year) | Long-term savings |
+| ~26,280 blocks (6 months) | Medium-term |
+| ~4,380 blocks (1 month) | Active trading |
+
+### Monitoring
+
+- Check vault status regularly
+- Set up alerts for vault activity
+- Keep recovery key backup current
+
+## Reporting Vulnerabilities
+
+**DO NOT** open public issues for security vulnerabilities.
+
+1. Contact maintainer directly
+2. Provide detailed description
+3. Allow 90 days for fix before disclosure
+
+## Audit Status
+
+Moonvault v4.0 has not been formally audited. Use at your own risk.
 
 ---
 
-## 📋 Checklist Pre-Settlement
-
-```
-[ ] El timelock ha expirado (bloque actual >= timelock)
-[ ] El UTXO no ha sido gastado
-[ ] Tengo la clave privada de recovery
-[ ] Tengo el redeem script
-[ ] La dirección destino es correcta
-[ ] El fee rate es razonable
-[ ] Revisé la transacción antes de broadcast
-```
-
----
-
-## 🛟 Recuperación de Emergencia
-
-### Si perdiste el redeem script
-
-Si tienes las pubkeys y el timelock, puedes reconstruirlo:
-
-```bash
-mooncoin btc-lock-generate \
-  --pubkey-hot <PUBKEY> \
-  --pubkey-cold <PUBKEY> \
-  --pubkey-recovery <PUBKEY> \
-  --timelock <BLOCK>
-```
-
-El script generado será idéntico.
-
-### Si tienes problemas de conexión
-
-Los comandos BTC Lock usan la API de Blockstream. Si hay problemas:
-
-1. Verifica tu conexión a internet
-2. Prueba acceder a https://blockstream.info manualmente
-3. Espera unos minutos y reintenta
-
-### Si el settlement falla
-
-1. Verifica que el timelock haya expirado
-2. Verifica que el UTXO no haya sido gastado
-3. Verifica que la clave privada es correcta
-4. Verifica que el redeem script coincide
-
----
-
-## 📞 Soporte
-
-Mooncoin es software de código abierto. Para soporte:
-
-1. Revisa la documentación
-2. Abre un issue en GitHub
-3. Únete a la comunidad
-
-**NUNCA compartas tus claves privadas con nadie, incluyendo "soporte".**
+**Remember:** Moonvault is infrastructure, not money. Your security ultimately depends on your key management.

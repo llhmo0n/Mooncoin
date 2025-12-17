@@ -1,95 +1,78 @@
-# Contribuir a Mooncoin
+# Contributing to Moonvault
 
-¡Gracias por tu interés en contribuir a Mooncoin! 🌙
+Thank you for your interest in contributing to Moonvault!
 
-## Código de Conducta
+## ⚠️ Important Reminder
 
-- Sé respetuoso y constructivo
-- Enfócate en el código, no en las personas
-- Ayuda a mantener un ambiente inclusivo
+**Moonvault is NOT money.** It is Bitcoin security infrastructure. Any contribution should align with this principle:
 
-## Cómo Contribuir
+- We protect Bitcoin, we don't replace it
+- Gas units have NO monetary value
+- BTC is the ONLY economic asset
 
-### Reportar Bugs
+## How to Contribute
 
-1. Verifica que el bug no haya sido reportado ya
-2. Abre un issue con:
-   - Descripción clara del problema
-   - Pasos para reproducir
-   - Comportamiento esperado vs actual
-   - Versión de Mooncoin y sistema operativo
+### Reporting Bugs
 
-### Sugerir Mejoras
+1. Check if the bug is already reported in [Issues](https://github.com/llhmo0n/Moonvault/issues)
+2. If not, open a new issue with:
+   - Clear description
+   - Steps to reproduce
+   - Expected vs actual behavior
+   - Your environment (OS, Rust version)
 
-1. Abre un issue describiendo la mejora
-2. Explica el caso de uso
-3. Si es posible, propón una implementación
+### Suggesting Features
 
-### Pull Requests
+1. Open an issue with the `enhancement` label
+2. Describe the feature and its use case
+3. Explain how it aligns with Moonvault's mission (Bitcoin security, NOT creating money)
 
-1. Fork el repositorio
-2. Crea una rama descriptiva:
-   ```bash
-   git checkout -b feature/nueva-funcionalidad
-   git checkout -b fix/descripcion-del-bug
-   ```
-3. Escribe código limpio y documentado
-4. Asegúrate que compila sin warnings:
-   ```bash
-   cargo build --release
-   cargo clippy
-   ```
-5. Agrega tests si es apropiado
-6. Commit con mensajes descriptivos:
-   ```
-   feat: agregar comando btc-lock-xxx
-   fix: corregir error en template matching
-   docs: actualizar README con ejemplos
-   ```
-7. Push y abre un PR
+### Code Contributions
 
-## Estilo de Código
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/your-feature`
+3. Make your changes
+4. Run tests: `cargo test`
+5. Commit with clear messages
+6. Push to your fork
+7. Open a Pull Request
 
-- Usa `rustfmt` para formatear
-- Sigue las convenciones de Rust
-- Documenta funciones públicas
-- Usa nombres descriptivos
+### Code Style
 
-## Estructura del Proyecto
+- Follow Rust conventions
+- Use `cargo fmt` before committing
+- Use `cargo clippy` to catch common issues
+- Add comments for complex logic
+- Write tests for new functionality
 
-```
-src/
-├── main.rs        # CLI y comandos
-├── btc_lock.rs    # Módulo BTC Lock
-└── lib.rs         # Constantes
+## Areas Where Help is Needed
 
-docs/
-├── BTC_LOCK.md    # Documentación técnica
-└── SECURITY.md    # Guía de seguridad
-```
+- [ ] Documentation improvements
+- [ ] Test coverage
+- [ ] Performance optimization
+- [ ] Security auditing
+- [ ] Cross-platform testing
 
-## Tests
+## Security Vulnerabilities
 
-```bash
-# Ejecutar tests
-cargo test
+**DO NOT** open public issues for security vulnerabilities.
 
-# Tests específicos
-cargo test btc_lock
-```
+Instead:
+1. Contact the maintainer directly
+2. Provide details of the vulnerability
+3. Allow time for a fix before public disclosure
 
-## Áreas que Necesitan Ayuda
+## Code of Conduct
 
-- [ ] Más templates LOCK
-- [ ] Broadcast automático de transacciones
-- [ ] Interfaz web
-- [ ] Documentación en más idiomas
-- [ ] Tests de integración
+- Be respectful
+- Be constructive
+- Focus on Bitcoin security, not speculation
+- Remember: Moonvault is infrastructure, not money
 
-## Preguntas
+## License
 
-Si tienes preguntas, abre un issue con el tag `question`.
+By contributing, you agree that your contributions will be licensed under the MIT License.
 
 ---
 
-¡Gracias por contribuir! 🚀
+Thank you for helping make Moonvault better! 🔐

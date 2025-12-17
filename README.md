@@ -1,4 +1,4 @@
-# 🔐 MoonVault v4.0
+# 🔐 Moonvault v4.0
 
 ## Bitcoin Security Infrastructure
 
@@ -6,12 +6,12 @@
 
 ---
 
-## ⚠️ CRITICAL NOTICE
+## ⚠️ IMPORTANT NOTICE
 
 ```
 ╔═══════════════════════════════════════════════════════════════════════════╗
 ║                                                                           ║
-║   MoonVault is NOT money. It is infrastructure software.                  ║
+║   Moonvault is NOT money. It is infrastructure software.                  ║
 ║                                                                           ║
 ║   • 'Gas units' have NO monetary value                                    ║
 ║   • Gas is NOT transferable - burn only                                   ║
@@ -25,20 +25,22 @@
 
 ---
 
-## 🎯 What is MoonVault?
+## 🎯 What is Moonvault?
 
-MoonVault provides **security services for Bitcoin self-custody**:
+Moonvault provides **security services for Bitcoin self-custody**:
 
-| Problem | MoonVault Solution |
+| Problem | Moonvault Solution |
 |---------|-------------------|
 | **Theft** | Vaults with hot/cold keys and panic button |
 | **Human Error** | Delays and cancellation windows |
 | **Key Loss** | Recovery paths with timelocks |
 
-**MoonVault is NOT:**
-- A cryptocurrency or digital money
-- A competitor to Bitcoin
-- An investment or store of value
+### What Moonvault is NOT:
+
+- ❌ A cryptocurrency or digital money
+- ❌ A competitor to Bitcoin
+- ❌ An investment or store of value
+- ❌ A token you can trade
 
 ---
 
@@ -48,12 +50,13 @@ MoonVault provides **security services for Bitcoin self-custody**:
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                              BITCOIN L1                                     │
 │   ┌─────────────────────────────────────────────────────────────────────┐   │
-│   │  • Your BTC (always here, never custodied by MoonVault)             │   │
+│   │  • Your BTC (always here, never custodied by Moonvault)             │   │
 │   │  • Fee Pool (service fees in BTC)                                   │   │
 │   │  • Vault Scripts (P2WSH addresses)                                  │   │
 │   └─────────────────────────────────────────────────────────────────────┘   │
 │                              ▲                                              │
 │                              │ observes (never custodies)                   │
+│                              │                                              │
 │   ┌─────────────────────────────────────────────────────────────────────┐   │
 │   │                         MOONVAULT                                   │   │
 │   │  • Coordination layer (ordering events)                             │   │
@@ -61,21 +64,30 @@ MoonVault provides **security services for Bitcoin self-custody**:
 │   │  • Gas burning (anti-spam only)                                     │   │
 │   └─────────────────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────────────────┘
-
-INVARIANT: If MoonVault disappears, you can ALWAYS recover your BTC 
-           directly on Bitcoin L1 using your keys + timelock.
 ```
+
+**INVARIANT:** If Moonvault disappears, you can ALWAYS recover your BTC directly on Bitcoin L1 using your keys + timelock.
 
 ---
 
 ## 📦 Installation
 
 ```bash
-git clone https://github.com/llhmo0n/MoonVault.git
-cd MoonVault
+# Clone
+git clone https://github.com/llhmo0n/Moonvault.git
+cd Moonvault
+
+# Build
 cargo build --release
+
+# Verify
 ./target/release/moonvault --help
 ```
+
+### Requirements
+
+- Rust 1.70+
+- Linux/macOS/Windows (WSL)
 
 ---
 
@@ -85,13 +97,13 @@ cargo build --release
 
 ```bash
 # Generate invoice for a service
-moonvault fee-invoice vault-create --pubkey <YOUR_PUBKEY> --testnet
+moonvault fee-invoice vault-create --pubkey <YOUR_PUBKEY>
 
 # Verify payment
-moonvault fee-verify <BITCOIN_TXID> --invoice <INVOICE_ID> --testnet
+moonvault fee-verify <BITCOIN_TXID> --invoice <INVOICE_ID>
 
 # Check Fee Pool status
-moonvault fee-pool-status --testnet
+moonvault fee-pool-status
 ```
 
 ### Vault Services
@@ -103,24 +115,42 @@ moonvault vault-create \
   --hot-key <HOT_PUBKEY> \
   --cold-key <COLD_PUBKEY> \
   --recovery-key <RECOVERY_PUBKEY> \
-  --timelock <BLOCK_HEIGHT> \
-  --testnet
+  --timelock <BLOCK_HEIGHT>
 
 # Check vault status
-moonvault vault-status <VAULT_ID> --testnet
+moonvault vault-status <VAULT_ID>
 
-# Activate panic button
+# Activate panic button (freeze everything)
 moonvault vault-panic <VAULT_ID> --recovery-key <PRIVKEY>
 
-# List vaults
+# List your vaults
 moonvault vault-list
 ```
 
-### Gas (Anti-spam)
+### Gas & Node
 
 ```bash
-moonvault gas-balance    # Check balance
-moonvault run            # Mine gas
+# Check gas balance
+moonvault gas-balance
+
+# Run node (mine gas)
+moonvault run
+
+# Show status
+moonvault status
+```
+
+### BTC Lock System
+
+```bash
+# Show lock templates
+moonvault btc-lock-templates
+
+# Generate lock script
+moonvault btc-lock-generate --pubkey-hot <KEY> --pubkey-cold <KEY> --pubkey-recovery <KEY> --timelock <HEIGHT>
+
+# Check connection to Bitcoin
+moonvault btc-lock-connect
 ```
 
 ---
@@ -131,49 +161,133 @@ moonvault run            # Mine gas
 |---------|---------|----------|
 | Create Vault | 10,000 sats | 1 gas |
 | Modify Vault | 5,000 sats | 1 gas |
-| Monitoring | 1,000 sats/month | 0 gas |
+| Monitoring (monthly) | 1,000 sats | 0 gas |
 
-**Distribution (immutable):** 70% Nodes, 20% Maintenance, 10% Reserve
+### Fee Distribution (immutable)
+
+| Recipient | Percentage |
+|-----------|------------|
+| Node Operators | 70% |
+| Protocol Maintenance | 20% |
+| Security Reserve | 10% |
+
+All distributions are on-chain in Bitcoin and publicly auditable.
 
 ---
 
-## 🔐 Vault Features
+## 🔐 Vault Security Model
 
-| Key | Purpose |
-|-----|---------|
-| **Hot** | Daily operations (limited) |
-| **Cold** | Large withdrawals (delayed) |
-| **Recovery** | Emergencies (after timelock) |
+### Three Keys
 
-**Panic Button:** Freeze all operations instantly if compromise detected.
+| Key | Purpose | Power |
+|-----|---------|-------|
+| **Hot Key** | Daily operations | Limited by daily amount |
+| **Cold Key** | Large withdrawals | Requires delay period |
+| **Recovery Key** | Emergencies | Full access after timelock |
+
+### Panic Button
+
+If you detect theft or compromise:
+
+1. Activate panic with recovery key
+2. All operations FREEZE immediately
+3. Wait for timelock, then recover with recovery key
+
+### Recovery Guarantee
+
+```
+YOUR BTC IS ALWAYS RECOVERABLE.
+
+Even if Moonvault disappears completely:
+1. Wait for timelock to expire
+2. Use your recovery key
+3. Spend directly on Bitcoin L1
+
+Moonvault cannot prevent you from recovering your Bitcoin.
+```
 
 ---
 
 ## ⛽ Gas System
 
-Gas is **NOT money**. It only prevents spam.
+**Gas is NOT money.** It exists only to prevent spam.
 
-- Not transferable
-- Burnable only
-- No market value
-- Mine it by running a node
+| Property | Value |
+|----------|-------|
+| Transferable | ❌ NO |
+| Burnable | ✅ YES |
+| Market Value | ❌ NONE |
+| Purpose | Anti-spam only |
+
+To get gas: Run a node with `moonvault run`
 
 ---
 
-## 🚫 MoonVault NEVER
+## 📁 Project Structure
 
-- ❌ Custodies your BTC
-- ❌ Moves your BTC
-- ❌ Creates money/tokens
-- ❌ Competes with Bitcoin
-- ❌ Has governance over funds
+```
+moonvault/
+├── src/
+│   ├── main.rs           # CLI and commands
+│   ├── lib.rs            # Protocol constants
+│   ├── btc_lock.rs       # Bitcoin observation
+│   ├── fee_system.rs     # BTC fee verification
+│   ├── vault_service.rs  # Vault management
+│   ├── wallet.rs         # Key management
+│   ├── block.rs          # Block structure
+│   ├── transaction.rs    # Transaction handling
+│   └── ...
+├── docs/
+│   ├── BTC_LOCK.md
+│   ├── SECURITY.md
+│   └── QUICKSTART.md
+├── Cargo.toml
+└── README.md
+```
+
+---
+
+## 🚫 What Moonvault NEVER Does
+
+- ❌ Custody your BTC
+- ❌ Move your BTC
+- ❌ Create money or tokens with value
+- ❌ Compete with Bitcoin
+- ❌ Promise returns or profits
+- ❌ Have governance over your funds
+
+---
+
+## 🛡️ Security
+
+Found a vulnerability? Please report responsibly:
+
+1. **DO NOT** open a public issue
+2. Contact the maintainer directly
+3. Allow time for a fix before disclosure
 
 ---
 
 ## 📜 License
 
-MIT License
+MIT License - See [LICENSE](LICENSE)
 
 ---
 
-**MoonVault - Protecting your Bitcoin, not replacing it.** 🔐
+## 👤 Author
+
+**KNKI** - [GitHub](https://github.com/llhmo0n)
+
+---
+
+<div align="center">
+
+**Moonvault v4.0**
+
+*Bitcoin Security Infrastructure*
+
+*Protecting your Bitcoin, not replacing it.*
+
+🔐
+
+</div>
